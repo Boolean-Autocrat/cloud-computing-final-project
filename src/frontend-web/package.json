@@ -1,0 +1,14 @@
+
+{
+  "name": "frontend-web",
+  "version": "1.0.0",
+  "description": "Frontend web service for HealthMonitor",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "cd client && npm install && npm run build"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

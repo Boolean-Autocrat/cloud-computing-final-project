@@ -1,0 +1,46 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: YOUR_DOCKER_REGISTRY/user-service:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: rds-credentials
+              key: username
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: rds-credentials
+              key: host
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: rds-credentials
+              key: dbname
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rds-credentials
+              key: password
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: rds-credentials
+              key: port

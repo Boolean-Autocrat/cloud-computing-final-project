@@ -1,0 +1,60 @@
+# Build artifacts
+*.log
+*.zip
+*.tar.gz
+*.jar
+target/
+build/
+dist/
+
+# Dependency directories
+node_modules/
+.npm/
+.yarn/
+vendor/
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfplan
+*.tfstate
+*.tfstate.backup
+crash.log
+override.tf
+override_*.tf
+*.tfvars
+*.tfvars.json
+eksctl_cluster.yaml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.mypy_cache/
+
+# Java
+.gradle/
+.project
+.classpath
+.settings/
+*.iml
+*.iws
+*.ipr
+
+# IDE-specific files
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*~
+
+# Environment variables
+.env
+.env.*
+!.env.example # Keep example files
+!*.tfvars.example # Keep example files
+!*.tfvars.json.example # Keep example files
+
+# Local k6 results
+k6-results.json

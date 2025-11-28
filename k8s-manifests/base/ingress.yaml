@@ -1,0 +1,25 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: health-monitor-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-web
+            port:
+              number: 80
+      - path: /ingest
+        pathType: Prefix
+        backend:
+          service:
+            name: ingestion-service
+            port:
+              number: 80
