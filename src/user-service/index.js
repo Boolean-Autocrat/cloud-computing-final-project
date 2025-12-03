@@ -1,6 +1,5 @@
-
-const express = require('express');
-const { Pool } = require('pg');
+const express = require("express");
+const { Pool } = require("pg");
 
 const app = express();
 app.use(express.json());
@@ -14,26 +13,45 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-app.get('/users', async (req, res) => {
+const initDb = async () => {
   try {
-    const { rows } = await pool.query('SELECT * FROM users');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100),
+        email VARCHAR(100) UNIQUE
+      );
+    `);
+    console.log("Database initialized: 'users' table checked/created.");
+  } catch (err) {
+    console.error("Database initialization failed:", err);
+  }
+};
+initDb();
+
+app.get("/users", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM users");
     res.json(rows);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-app.post('/users', async (req, res) => {
-    try {
-      const { name, email } = req.body;
-      const { rows } = await pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email]);
-      res.json(rows[0]);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
+app.post("/users", async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const { rows } = await pool.query(
+      "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
+      [name, email]
+    );
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`User service listening at http://localhost:${port}`);

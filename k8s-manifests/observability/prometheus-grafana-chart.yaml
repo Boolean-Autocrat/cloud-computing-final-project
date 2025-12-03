@@ -29,6 +29,13 @@ spec:
         dashboards:
           enabled: true
           label: grafana_dashboard
+      additionalDataSources:
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://loki:3100
+          jsonData:
+            maxLines: 1000
     prometheus:
       prometheusSpec:
         podMonitorSelectorNilUsesHelmValues: false

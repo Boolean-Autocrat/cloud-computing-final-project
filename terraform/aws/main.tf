@@ -52,3 +52,11 @@ module "s3" {
   project_name = var.project_name
   aws_region   = var.aws_region
 }
+
+module "lambda" {
+  source = "./lambda"
+
+  project_name   = var.project_name
+  s3_bucket_name = module.s3.s3_bucket_name
+  s3_bucket_arn  = module.s3.s3_bucket_arn
+}

@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,8 +12,17 @@ spec:
       labels:
         app: frontend-web
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
-      - name: frontend-web
-        image: YOUR_DOCKER_REGISTRY/frontend-web:latest
-        ports:
-        - containerPort: 3000
+        - name: frontend-web
+          image: ghcr.io/boolean-autocrat/frontend-web:latest
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          ports:
+            - containerPort: 3000

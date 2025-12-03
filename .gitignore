@@ -12,6 +12,7 @@ node_modules/
 .npm/
 .yarn/
 vendor/
+venv/
 
 # Terraform
 .terraform/

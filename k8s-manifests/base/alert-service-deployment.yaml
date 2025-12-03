@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,22 +12,24 @@ spec:
       labels:
         app: alert-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
-      - name: alert-service
-        image: YOUR_DOCKER_REGISTRY/alert-service:latest
-        env:
-        - name: KAFKA_BOOTSTRAP_SERVERS
-          valueFrom:
-            secretKeyRef:
-              name: kafka-credentials
-              key: bootstrap.servers
-        - name: KAFKA_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: kafka-credentials
-              key: api.key
-        - name: KAFKA_API_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: kafka-credentials
-              key: api.secret
+        - name: alert-service
+          image: ghcr.io/boolean-autocrat/alert-service:latest
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-credentials
+                  key: bootstrap.servers
+            - name: KAFKA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-credentials
+                  key: api.key
+            - name: KAFKA_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-credentials
+                  key: api.secret

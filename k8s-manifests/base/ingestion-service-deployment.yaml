@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,8 +12,33 @@ spec:
       labels:
         app: ingestion-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
-      - name: ingestion-service
-        image: YOUR_DOCKER_REGISTRY/ingestion-service:latest
-        ports:
-        - containerPort: 80
+        - name: ingestion-service
+          image: ghcr.io/boolean-autocrat/ingestion-service:latest
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          ports:
+            - containerPort: 80
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-credentials
+                  key: bootstrap.servers
+            - name: KAFKA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-credentials
+                  key: api.key
+            - name: KAFKA_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-credentials
+                  key: api.secret

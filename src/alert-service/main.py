@@ -1,18 +1,22 @@
-
 import json
-from confluent_kafka import Consumer, KafkaError
+from confluent_kafka import Consumer
+from confluent_kafka.cimpl import KafkaError
 import boto3
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Kafka consumer configuration
 conf = {
-    'bootstrap.servers': "YOUR_CONFLUENT_CLOUD_BOOTSTRAP_SERVER",
+    'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS'),
     'group.id': "alert-service-group",
     'auto.offset.reset': 'earliest',
     'security.protocol': 'SASL_SSL',
     'sasl.mechanisms': 'PLAIN',
-    'sasl.username': 'YOUR_CONFLUENT_CLOUD_API_KEY',
-    'sasl.password': 'YOUR_CONFLUENT_CLOUD_API_SECRET',
+    'sasl.username': os.getenv('KAFKA_API_KEY'),
+    'sasl.password': os.getenv('KAFKA_API_SECRET'),
 }
 consumer = Consumer(conf)
 consumer.subscribe(['raw-vitals'])
@@ -27,14 +31,18 @@ def process_message(msg):
     heart_rate = vital['heart_rate']
 
     if heart_rate > 100 or heart_rate < 60:
-        print(f"Alert for patient {patient_id}: Heart rate is {heart_rate}")
-        table.put_item(
-            Item={
-                'patient_id': patient_id,
-                'timestamp': datetime.now().isoformat(),
-                'heart_rate': heart_rate
-            }
-        )
+        try:
+            table.put_item(
+                Item={
+                    'patient_id': patient_id,
+                    'timestamp': datetime.now().isoformat(),
+                    'heart_rate': heart_rate
+                }
+            )
+            print("ALERT: Patient ID:", patient_id, "Heart Rate:", heart_rate)
+            print(f"Alert stored for {patient_id}")
+        except Exception as e:
+            print(f"Failed to write to DynamoDB: {e}")
 
 while True:
     msg = consumer.poll(1.0)
@@ -48,6 +56,9 @@ while True:
             print(msg.error())
             break
 
-    process_message(msg)
+    try:
+        process_message(msg)
+    except Exception as e:
+        print(f"Error processing message: {e}")
 
 consumer.close()
